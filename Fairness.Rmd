@@ -325,7 +325,7 @@ Choose one of the data described above as your target problem.
 ~~~
 Please write your answer in full sentences.
 
-
+German credit data 
 ~~~
 
 Discuss what a favorable label in this problem is and what does a favorable label grant the affected user?
@@ -333,6 +333,10 @@ Is it assertive or non-punitive?
 
 ~~~
 Please write your answer in full sentences.
+
+In this problem, a favorable label would be "GOOD," indicating that the customer is not expected to default on their loan. A favorable label grants the affected user a better chance of being approved for a loan, as they are deemed to be a lower risk for the lender. This label is non-punitive, as it does not penalize the user but rather benefits them by potentially providing access to financial services.
+
+
 
 
 ~~~
@@ -342,6 +346,8 @@ What type of justice is this issue about?
 ~~~
 Please write your answer in full sentences.
 
+This issue is primarily about distributive justice, which concerns the fair allocation of favorable label among age groups. In this context, it involves ensuring that the model's predictions do not unfairly disadvantage certain groups, such as young customers, based on their age or other demographic factors.
+
 
 ~~~
 
@@ -350,7 +356,7 @@ Discuss the potential concerns about the data being used.
 ~~~
 Please write your answer in full sentences.
 
-
+ a suitable group fairness metric could be demographic parity, which requires that the proportion of individuals receiving favorable outcomes is equal across different demographic groups. In this case, it would involve ensuring that the proportion of customers predicted as "GOOD" is similar across different age groups. This metric is appropriate because it directly addresses the concern of fairness in the distribution of loan approvals among different age groups.
 ~~~
 
 Discuss what type of group fairness metrics is appropriate for this problem.
@@ -358,14 +364,23 @@ Discuss what type of group fairness metrics is appropriate for this problem.
 ~~~
 Please write your answer in full sentences.
 
-
+I used calibration as the label is non-punitive and the statistical relationship is 𝑌 ⫫ 𝑍 ∣ 𝑌̂ 
 ~~~
 
 Using the appropriate fairness metrics, show if there are concerns in the prediction algorithm.
 
 ```{r}
-#
-#
+
+log_model <- glm(BAD ~ ., data = germancredit, family = binomial())
+germancredit$predicted_prob <- predict(log_model, newdata = germancredit, type = "response")
+
+
+germancredit$BAD_numeric <- as.numeric(germancredit$BAD) - 1
+
+model <- lrm(BAD_numeric ~ predicted_prob, data = germancredit, x = TRUE, y = TRUE)
+
+plot<- calibrate(model, method = "boot", B = 1000)
+plot(plot)
 ```
 
 ~~~
@@ -383,6 +398,10 @@ Given that you have access to the original data, but not to the model used to ma
 
 ~~~
 Please write your answer in full sentences.
+
+we can use Analysis of Residuals which Examine prediction errors for patterns indicating bias, then adjust to correct systemic disparities or 
+
+Involvement of Stakeholders which Engage affected parties for insights into the model's impact and suggestions for improvement.
 
 
 ~~~
